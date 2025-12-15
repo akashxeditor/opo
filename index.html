@@ -2,13 +2,8 @@
 <html lang="bn">
 <head>
     
-    <title>এআইহাব: সেরা এআই ইমেজ জেনারেশন প্রম্পট ও টুলস</title>
-    <meta name="description" content="AIHub-এ আপনার প্রয়োজনীয় হাই-রেজোলিউশন, ক্রিয়েটিভ এআই ইমেজ প্রম্পটগুলি খুঁজুন। ট্রেন্ডিং আর্ট, রেটিং এবং কাস্টম প্রম্পট লাইব্রেরি।">
-    <meta name="keywords" content="AI Image Prompt, এআই আর্ট, ইমেজ জেনারেশন, মিডজার্নি প্রম্পট, স্ট্যাবল ডিফিউশন, ডিজিটাল আর্ট, FIREBASE">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
     <style>
         /* --- CSS ভেরিয়েবলস --- */
         :root {
@@ -24,306 +19,481 @@
 
         /* থিম ক্লাসসমূহ */
         body.theme-light { --bg-primary: #f5f5f5; --bg-secondary: #ffffff; --text-primary: #0f0f0f; --text-secondary: #606060; --nav-bg: #ffffff; --border-color: #e0e0e0; --glass-effect: none; }
-        body.theme-dark { --bg-primary: #121212; --bg-secondary: #1e1e1e; --text-primary: #ffffff; --text-secondary: #e0e0e0; --nav-bg: rgba(20, 20, 40, 0.9); --border-color: rgba(255, 255, 255, 0.2); --glass-effect: blur(10px); }
-        body.theme-gradient { /* ডিফল্ট থিম */ }
+        body.theme-dark { --bg-primary: #121212; --bg-secondary: #1e1e1e; --text-primary: #ffffff; --text-secondary: #aaaaaa; --nav-bg: #1e1e1e; --border-color: #333; }
+        body.theme-neon { --bg-primary: #050510; --bg-secondary: #0f0f20; --text-primary: #00f2ff; --text-secondary: #b000ff; --nav-bg: #0f0f20; --border-color: #00f2ff; --accent-color: #00f2ff; }
 
-        /* স্ক্রিন রিডার অনলি ক্লাস (SEO-র জন্য অদৃশ্য হেডিং) */
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; padding-bottom: 70px; background-attachment: fixed; }
+
+        /* হেডার */
+        header {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--nav-bg); backdrop-filter: var(--glass-effect);
+            padding: 10px 15px; display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
         }
+        .logo { font-size: 20px; font-weight: bold; color: var(--text-primary); display: flex; align-items: center; gap: 5px; }
         
-        /* ... আপনার বিদ্যমান অন্যান্য CSS কোড এখানে ... */
-        body { background: var(--bg-primary); color: var(--text-primary); margin: 0; font-family: sans-serif; transition: background 0.3s, color 0.3s; }
-        .header { position: fixed; top: 0; left: 0; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: var(--nav-bg); backdrop-filter: var(--glass-effect); z-index: 1000; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
-        .logo { font-size: 1.5em; font-weight: bold; color: var(--text-primary); text-decoration: none; }
-        .nav-links { display: flex; }
-        .nav-item { background: none; border: none; color: var(--text-primary); padding: 10px 15px; cursor: pointer; font-size: 1em; margin-left: 10px; opacity: 0.7; transition: opacity 0.2s, color 0.2s; }
-        .nav-item.active { opacity: 1; color: var(--accent-color); }
-        .main-content { padding-top: 60px; min-height: 100vh; }
-        .page { display: none; padding: 20px; }
+        /* সার্চ বার */
+        .search-container { position: relative; width: 70%; }
+        .search-box {
+            display: flex; align-items: center;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 25px; padding: 8px 15px;
+        }
+        .search-box input {
+            background: transparent; border: none; outline: none; color: var(--text-primary); width: 100%; margin-left: 8px; font-size: 15px;
+        }
+        .suggestions-box {
+            position: absolute; top: 110%; left: 0; width: 100%;
+            background: var(--nav-bg); border-radius: 10px; z-index: 101;
+            display: none; border: 1px solid var(--border-color);
+        }
+        .suggestion-item { padding: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; font-size: 14px; }
+
+        /* --- YouTube Card Style --- */
+        .grid-container {
+            padding: 0; max-width: 600px; margin: 0 auto;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .card {
+            background: transparent; cursor: pointer; padding-bottom: 15px; margin-bottom: 5px;
+        }
+        .thumbnail-container {
+            width: 100%; position: relative; padding-top: 56.25%; /* 16:9 */
+            background: #000; overflow: hidden;
+        }
+        .card-img {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;
+        }
+        .card-meta {
+            display: flex; padding: 12px 12px 0 12px; align-items: flex-start;
+        }
+        .channel-icon {
+            width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+            margin-right: 12px; flex-shrink: 0; background: #333; border: 1px solid var(--border-color);
+        }
+        .text-info { flex: 1; display: flex; flex-direction: column; }
+        .card-title {
+            font-size: 16px; font-weight: 500; line-height: 1.3; margin-bottom: 4px;
+            color: var(--text-primary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .card-subtitle { font-size: 12px; color: var(--text-secondary); }
+
+        /* সেটিংস মেনু */
+        .settings-list { padding: 15px; max-width: 600px; margin: 0 auto; }
+        .setting-card {
+            background: var(--bg-secondary); border: 1px solid var(--border-color);
+            padding: 15px; margin-bottom: 10px; border-radius: 12px;
+            display: flex; align-items: center; cursor: pointer; backdrop-filter: var(--glass-effect);
+        }
+        .setting-icon { margin-right: 15px; font-size: 18px; color: var(--text-primary); }
+        .setting-text { flex: 1; font-weight: 500; font-size: 15px; }
+
+        /* Contact Page Buttons */
+        .contact-btn {
+            background: var(--bg-secondary); color: var(--text-primary); padding: 12px;
+            border-radius: 10px; display: flex; align-items: center; margin-bottom: 10px;
+            text-decoration: none; border: 1px solid var(--border-color);
+        }
+        .contact-btn i { font-size: 20px; margin-right: 15px; }
+
+        /* Theme Modal */
+        .theme-modal {
+            position: fixed; bottom: -100%; left: 0; width: 100%;
+            background: var(--nav-bg); border-radius: 20px 20px 0 0; padding: 20px;
+            z-index: 2000; transition: bottom 0.3s; border-top: 1px solid var(--border-color);
+        }
+        .theme-modal.active { bottom: 0; }
+        .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .theme-option { border: 2px solid var(--border-color); border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; }
+        .theme-preview { height: 40px; border-radius: 5px; margin-bottom: 5px; }
+
+        /* Detail/Prompt Page Styles */
+        .prompt-box { background: var(--bg-secondary); padding: 15px; border-radius: 8px; font-family: monospace; margin: 15px 0; border: 1px dashed var(--border-color); user-select: text; }
+        
+        .action-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
+        .action-btn { flex: 1; padding: 10px; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .copy-btn { background: var(--accent-color); color: white; }
+        .share-btn { background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); }
+
+        /* Bottom Nav & Pages */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: var(--nav-bg); border-top: 1px solid var(--border-color);
+            display: flex; justify-content: space-around; padding: 10px 0;
+            z-index: 999; backdrop-filter: var(--glass-effect);
+        }
+        .nav-item { text-align: center; color: var(--text-secondary); width: 25%; font-size: 10px; cursor: pointer; }
+        .nav-item.active { color: var(--accent-color); }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; display: block; }
+        .page { display: none; padding-top: 10px; }
         .page.active { display: block; }
 
-        /* সার্চ বার স্টাইল */
-        .search-container { position: relative; width: 300px; }
-        .search-input { width: 100%; padding: 8px 15px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); box-sizing: border-box; }
-        #suggestionsBox { position: absolute; top: 100%; left: 0; right: 0; background: var(--nav-bg); border-radius: 5px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); z-index: 1001; display: none; max-height: 200px; overflow-y: auto; }
-        .suggestion-item { padding: 10px 15px; cursor: pointer; border-bottom: 1px solid var(--border-color); }
-        .suggestion-item:hover { background: rgba(255, 255, 255, 0.1); }
-
-        /* কার্ড গ্রিড */
-        .content-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: 20px auto; padding: 0 20px; }
-        .card { background: var(--bg-secondary); border-radius: 10px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); }
-        .thumbnail-container { width: 100%; aspect-ratio: 16 / 9; overflow: hidden; }
-        .card-img { width: 100%; height: 100%; object-fit: cover; }
-        .card-meta { display: flex; padding: 10px; align-items: center; }
-        .channel-icon { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; background: #ccc; }
-        .card-title { font-size: 1em; font-weight: bold; margin: 0; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .card-subtitle { font-size: 0.8em; color: var(--text-secondary); }
-
-        /* মোডাল স্টাইল */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8); }
-        .modal.active { display: block; }
-        .modal-content { background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 900px; border-radius: 10px; color: #000; position: relative; }
-        .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; }
-        .close-btn:hover, .close-btn:focus { color: #000; text-decoration: none; cursor: pointer; }
-        .modal-img { width: 100%; border-radius: 8px; margin-bottom: 15px; }
-        .modal-info h2 { margin-top: 0; }
-        .modal-details { display: flex; justify-content: space-between; }
-        
-        /* সেটিংস স্টাইল */
-        .settings-container { max-width: 600px; margin: 40px auto; padding: 20px; background: var(--bg-secondary); border-radius: 10px; }
-        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border-color); }
-        .setting-item:last-child { border-bottom: none; }
-        .theme-switch { display: flex; gap: 10px; }
-        .theme-button { padding: 8px 15px; border: 1px solid var(--border-color); border-radius: 5px; cursor: pointer; background: rgba(255, 255, 255, 0.1); color: var(--text-primary); transition: background 0.2s; }
-        .theme-button.active { background: var(--accent-color); border-color: var(--accent-color); }
-        
     </style>
 </head>
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
+
+<h1 class="sr-only">Jhadi – Ultimate AI Image Generation Platform</h1>
+<h2 class="sr-only">Generate Stunning AI Images with Advanced Prompts</h2>
+<h2 class="sr-only">Explore Creative Digital Art and Web Tools</h2>
+<h2 class="sr-only">Enhance Your Artistic Workflow Online</h2>
+<h3 class="sr-only">AI-Powered Visuals for Designers and Artists</h3>
+<h3 class="sr-only">High-Resolution Digital Creations</h3>
+<h3 class="sr-only">Interactive Web-Based Tools for Creativity</h3>
+<h4 class="sr-only">Futuristic UI and Holographic Design Elements</h4>
+<h4 class="sr-only">Professional AI Image Generation Techniques</h4>
+<h4 class="sr-only">Customizable Creative Prompts Library</h4>
+<h5 class="sr-only">Hyper-Realistic Textures and Cinematic Lighting</h5>
+<h5 class="sr-only">Dynamic Composition and Multiple Angles</h5>
+<h6 class="sr-only">Perfect for Web, Social Media, and Portfolio Projects</h6>
+
 <body class="theme-gradient">
 
-    <h1 class="sr-only">এআইহাব – আলটিমেট এআই ইমেজ জেনারেশন প্ল্যাটফর্ম এবং প্রম্পট লাইব্রেরি</h1>
-    <h2 class="sr-only">ট্রেন্ডিং এআই আর্ট এবং হাই-রেজোলিউশন ডিজিটাল ক্রিয়েশন</h2>
-    <h3 class="sr-only">সেরা মিডজার্নি ও স্ট্যাবল ডিফিউশন প্রম্পট এক্সপ্লোর করুন</h3>
-    <h4 class="sr-only">সৃজনশীলতা বাড়ানোর জন্য ইন্টারেক্টিভ ওয়েব টুলস</h4>
-
-    <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "WebPage",
-          "name": "এআইহাব: সেরা এআই ইমেজ জেনারেশন প্রম্পট ও টুলস",
-          "description": "AIHub-এ আপনার প্রয়োজনীয় হাই-রেজোলিউশন, ক্রিয়েটিভ এআই ইমেজ প্রম্পটগুলি খুঁজুন। ট্রেন্ডিং আর্ট, রেটিং এবং কাস্টম প্রম্পট লাইব্রেরি।",
-          "url": "আপনার-ওয়েবসাইটের-স্থায়ী-URL", 
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": {
-              "@type": "EntryPoint",
-              "urlTemplate": "আপনার-ওয়েবসাইটের-URL?search={search_term_string}"
-            },
-            "query-input": "required name=search_term_string"
-          }
-        }
-    </script>
-    
-    <div class="header">
-        <a href="#" class="logo">AIHub</a>
+    <header>
+        <div class="logo"><i class="fab fa-youtube"></i> AiHub</div>
         <div class="search-container">
-            <input type="text" id="searchInput" class="search-input" placeholder="প্রম্পট খুঁজুন..." autocomplete="off">
-            <div id="suggestionsBox"></div>
+            <div class="search-box">
+                <i class="fas fa-search" style="color:var(--text-secondary)"></i>
+                <input type="text" id="searchInput" placeholder="Search...">
+            </div>
+            <div class="suggestions-box" id="suggestionsBox"></div>
         </div>
-        <div class="nav-links">
-            <button class="nav-item active" id="homeLink" data-page="homePage">হোম</button>
-            <button class="nav-item" id="trendingLink" data-page="trendingPage">ট্রেন্ডিং</button>
-            <button class="nav-item" id="settingsLink" data-page="settingsPage">সেটিংস</button>
+    </header>
+
+    <div id="homePage" class="page active">
+        <div class="grid-container" id="contentGrid">
+            <p style="text-align:center; padding:20px;">Loading...</p>
         </div>
     </div>
 
-    <div class="main-content">
-        
-        <div class="page active" id="homePage">
-            <h2 class="sr-only">হোমপেজ: নতুন ও জনপ্রিয় এআই আর্ট</h2>
-            <div id="contentGrid" class="content-grid">
-                </div>
-        </div>
+    <div id="trendingPage" class="page">
+        <h3 style="padding: 10px 15px; color: var(--accent-color);">🔥 Trending (4.5+)</h3>
+        <div class="grid-container" id="trendingGrid"></div>
+    </div>
 
-        <div class="page" id="trendingPage">
-            <h2>🔥 ট্রেন্ডিং প্রম্পট</h2>
-            <div id="trendingGrid" class="content-grid">
+    <div id="contactPage" class="page" style="padding: 20px; max-width: 600px; margin: 0 auto;">
+        <h2>Connect</h2>
+        <a href="mailto:minhaj7b118b11@gmail.com" class="contact-btn"><i class="fas fa-envelope" style="color: #DB4437;"></i> Email</a>
+        <a href="https://t.me/minhajcode" target="_blank" class="contact-btn"><i class="fab fa-telegram" style="color: #0088CC;"></i> Telegram</a>
+        <a href="#" class="contact-btn"><i class="fab fa-youtube" style="color: #FF0000;"></i> YouTube</a>
+        <a href="#" class="contact-btn"><i class="fab fa-facebook" style="color: #1877F2;"></i> Facebook</a>
+    </div>
+
+    <div id="settingPage" class="page">
+        <div class="settings-list">
+            <h2 style="margin: 0 0 20px 0; text-align: center;">Settings</h2>
+            
+            <div class="setting-card" onclick="openThemeSelector()">
+                <i class="fas fa-palette setting-icon"></i>
+                <span class="setting-text">Themes</span>
+                <i class="fas fa-chevron-right" style="opacity:0.5; font-size:12px;"></i>
+            </div>
+            
+            <div class="setting-card" onclick="openHistoryPage()">
+                <i class="fas fa-history setting-icon"></i>
+                <span class="setting-text">Watch History</span>
+                <i class="fas fa-chevron-right" style="opacity:0.5; font-size:12px;"></i>
+            </div>
+
+            <div class="setting-card" onclick="shareApp()">
+                <i class="fas fa-share-alt setting-icon"></i>
+                <span class="setting-text">Share Application</span>
+            </div>
+
+            <a href="https://your-privacy-link.com" target="_blank" style="text-decoration:none; color:inherit;">
+                <div class="setting-card">
+                    <i class="fas fa-shield-alt setting-icon"></i>
+                    <span class="setting-text">Privacy Policy</span>
+                    <i class="fas fa-external-link-alt" style="opacity:0.5; font-size:12px;"></i>
                 </div>
-        </div>
-        
-        <div class="page" id="settingsPage">
-            <div class="settings-container">
-                <h2>⚙️ সেটিংস</h2>
-                <div class="setting-item">
-                    <span>থিম পরিবর্তন:</span>
-                    <div class="theme-switch">
-                        <button class="theme-button active" data-theme="theme-gradient">গ্রেডিয়েন্ট</button>
-                        <button class="theme-button" data-theme="theme-dark">ডার্ক</button>
-                        <button class="theme-button" data-theme="theme-light">লাইট</button>
-                    </div>
+            </a>
+
+            <a href="https://your-help-link.com" target="_blank" style="text-decoration:none; color:inherit;">
+                <div class="setting-card">
+                    <i class="fas fa-question-circle setting-icon"></i>
+                    <span class="setting-text">Help & Support</span>
+                    <i class="fas fa-external-link-alt" style="opacity:0.5; font-size:12px;"></i>
                 </div>
+            </a>
+            
+             <div class="setting-card" onclick="window.location.href='admin.html'">
+                <i class="fas fa-user-shield setting-icon"></i>
+                <span class="setting-text">Admin Panel</span>
             </div>
         </div>
     </div>
-    
-    <div id="postModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
-            <div class="modal-info">
-                <img id="modalImg" class="modal-img" src="" alt="">
-                <h2 id="modalTitle"></h2>
-                <p id="modalPrompt" style="background: #eee; padding: 10px; border-radius: 5px; color: #333;"></p>
-                <div class="modal-details">
-                    <p>রেটিং: <span id="modalRating"></span></p>
-                    <p>পোস্ট করা হয়েছে: <span id="modalTimestamp"></span></p>
-                </div>
-                <button onclick="copyPrompt()">প্রম্পট কপি করুন</button>
+
+    <div id="historyPage" class="page">
+        <div style="padding:15px; display:flex; align-items:center;">
+            <i class="fas fa-arrow-left" onclick="showPage('settingPage')" style="font-size:20px; margin-right:15px; cursor:pointer;"></i>
+            <h3>Watch History</h3>
+        </div>
+        <div class="grid-container" id="historyGrid"></div>
+    </div>
+
+    <div id="detailPage" class="page">
+        <div style="padding:15px; display:flex; align-items:center;">
+            <i class="fas fa-arrow-left" onclick="showPage('homePage')" style="font-size:20px; margin-right:15px; cursor:pointer;"></i>
+            <h3 id="detailPageTitle">Item Details</h3>
+        </div>
+        
+        <div class="grid-container" style="padding: 0 15px;">
+            <img src="" id="modalImg" style="width:100%; border-radius:10px; margin-bottom:15px;" onerror="this.style.display='none'">
+            <h2 id="modalTitle" style="font-size:18px; margin-bottom:5px;">Title</h2>
+            <div id="modalMeta" style="color:var(--text-secondary); font-size:13px; margin-bottom:20px;"></div>
+            
+            <div class="action-buttons">
+                <button class="action-btn copy-btn" onclick="copyPrompt()">
+                    <i class="fas fa-copy"></i> Copy Prompt
+                </button>
+                <button class="action-btn share-btn" onclick="shareItem()">
+                    <i class="fab fa-whatsapp"></i> Share
+                </button>
+            </div>
+
+            <h4>Prompt:</h4>
+            <div class="prompt-box" id="modalPrompt"></div>
+
+            <h4 style="margin-top:20px;">Comments</h4>
+            <div id="modalComments" style="margin-bottom:15px; font-size:13px; opacity:0.8; max-height:150px; overflow-y:auto;"></div>
+            <div style="display:flex; margin-bottom: 20px;">
+                <input type="text" id="commentInput" placeholder="Add comment..." style="flex:1; padding:10px; border-radius:5px; border:none; background:var(--bg-secondary); color:var(--text-primary);">
+                <button id="postComment" style="margin-left:10px; padding:0 15px; background:var(--accent-color); color:white; border:none; border-radius:5px;">Post</button>
             </div>
         </div>
     </div>
+    <div class="theme-modal" id="themeModal">
+        <div style="display:flex; justify-content:space-between;">
+            <h3>Select Theme</h3>
+            <span onclick="closeThemeSelector()" style="cursor:pointer; font-size:20px;">&times;</span>
+        </div>
+        <div class="theme-grid">
+            <div class="theme-option" onclick="setTheme('theme-gradient')"><div class="theme-preview" style="background:linear-gradient(135deg, #2b1055, #7597de);"></div>Luxe</div>
+            <div class="theme-option" onclick="setTheme('theme-neon')"><div class="theme-preview" style="background:#000; border:1px solid cyan;"></div>Neon</div>
+            <div class="theme-option" onclick="setTheme('theme-dark')"><div class="theme-preview" style="background:#121212;"></div>Dark</div>
+            <div class="theme-option" onclick="setTheme('theme-light')"><div class="theme-preview" style="background:#f5f5f5;"></div>Light</div>
+        </div>
+    </div>
 
-    <script type="text/javascript">
-        // ডেমো ডেটা (এটি আপনার Firebase ডেটা হিসাবে কাজ করবে)
-        let allData = [
-            { id: 1, title: 'সিনেমাটিক লাইটিং সহ ফিউচারিস্টিক সিটি', imgLink: 'placeholder-url-1', prompt: 'Cinematic lighting, neon glow, futuristic city, 8k, hyper detailed', rating: 4.9, timestamp: 1700000000000 },
-            { id: 2, title: 'হলোগ্রাফিক এনজেল পোর্ট্রেট', imgLink: 'placeholder-url-2', prompt: 'Holographic angel, soft light, close-up portrait, detailed texture', rating: 4.5, timestamp: 1699000000000 },
-            { id: 3, title: 'এন্টিক স্টিমপাঙ্ক রোবট', imgLink: 'placeholder-url-3', prompt: 'Antique steampunk robot, brass details, high contrast, studio lighting', rating: 4.2, timestamp: 1698000000000 },
-            // ... আরও পোস্ট ডেটা ...
-        ];
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('homePage', this)"><i class="fas fa-home"></i> Home</div>
+        <div class="nav-item" onclick="switchTab('trendingPage', this)"><i class="fas fa-fire"></i> Trending</div>
+        <div class="nav-item" onclick="switchTab('contactPage', this)"><i class="fas fa-envelope"></i> Contact</div>
+        <div class="nav-item" onclick="switchTab('settingPage', this)"><i class="fas fa-cog"></i> Settings</div>
+    </nav>
 
-        // গ্লোবাল ভেরিয়েবল
-        const adminAvatar = 'https://via.placeholder.com/40'; // আপনার চ্যানেলের আইকন
-        const modal = document.getElementById('postModal');
-        
-        // ফাংশন: সময় গণনা (কতক্ষণ আগে পোস্ট হয়েছে)
-        function timeAgo(timestamp) {
-            const seconds = Math.floor((new Date() - timestamp) / 1000);
-            let interval = seconds / 31536000;
-            if (interval > 1) return Math.floor(interval) + " বছর আগে";
-            interval = seconds / 2592000;
-            if (interval > 1) return Math.floor(interval) + " মাস আগে";
-            interval = seconds / 86400;
-            if (interval > 1) return Math.floor(interval) + " দিন আগে";
-            interval = seconds / 3600;
-            if (interval > 1) return Math.floor(interval) + " ঘন্টা আগে";
-            interval = seconds / 60;
-            if (interval > 1) return Math.floor(interval) + " মিনিট আগে";
-            return Math.floor(seconds) + " সেকেন্ড আগে";
-        }
-        
-        // ফাংশন: পোস্ট ডিটেইলস মোডাল খোলা
-        function openModal(item, timeStr) {
-            document.getElementById('modalImg').src = item.imgLink;
-            document.getElementById('modalImg').alt = item.title; // Alt text for SEO
-            document.getElementById('modalTitle').innerText = item.title;
-            document.getElementById('modalPrompt').innerText = item.prompt;
-            document.getElementById('modalRating').innerText = item.rating;
-            document.getElementById('modalTimestamp').innerText = timeStr;
-            modal.classList.add('active');
-        }
+                           <script>
+        // --- গ্লোবাল ভেরিয়েবল ---
+        let adminAvatar = "https://via.placeholder.com/36";
+        let allData = [];
+        let currentItem = null;
 
-        // ফাংশন: মোডাল বন্ধ করা
-        function closeModal() {
-            modal.classList.remove('active');
-        }
-        
-        // ফাংশন: প্রম্পট কপি করা
-        function copyPrompt() {
-            const promptText = document.getElementById('modalPrompt').innerText;
-            navigator.clipboard.writeText(promptText).then(() => {
-                alert('প্রম্পট কপি করা হয়েছে!');
-            }, (err) => {
-                console.error('কপি করতে ব্যর্থ:', err);
-            });
-        }
-        
-        // ফাংশন: পেজ পরিবর্তন করা
-        function navigateTo(pageId) {
-            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
-            
-            // যদি ট্রেন্ডিং পেজে যাওয়া হয়, রেটিং অনুযায়ী সাজানো
-            if (pageId === 'trendingPage') {
-                const trendingData = [...allData].sort((a, b) => b.rating - a.rating);
-                renderGrid(trendingData, 'trendingGrid');
-            } else if (pageId === 'homePage') {
-                // হোমে গেলে আসল ডেটা দেখান
-                renderGrid(allData, 'contentGrid');
+        // আপনার Supabase ফাংশন লিংক
+        const API_URL = "https://ambylxvsxgxfgzpxzwpr.supabase.co/functions/v1/bright-worker";
+
+        // --- ১. সিস্টেম শুরু (ডাটা লোড) ---
+        async function initSystem() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error("Server Error");
+
+                const result = await response.json();
+                
+                // ১.১ অবতার সেট করা
+                if(result.avatar) {
+                    adminAvatar = result.avatar;
+                    document.querySelectorAll('.channel-icon').forEach(img => img.src = adminAvatar);
+                }
+
+                // ১.২ প্রম্পট ডাটা প্রসেস করা
+                const data = result.prompts;
+                allData = [];
+                if (data) {
+                    Object.keys(data).forEach(key => allData.push({ id: key, ...data[key] }));
+                    allData.reverse();
+                    
+                    renderGrid(allData, 'contentGrid');
+                    renderGrid(allData.filter(d => parseFloat(d.rating) >= 4.5), 'trendingGrid');
+                    // checkDeepLink() ফাংশনটি নতুন পেজ লজিকের জন্য অপ্রয়োজনীয়
+                } else {
+                    document.getElementById('contentGrid').innerHTML = "<p style='text-align:center'>No Data Found</p>";
+                }
+
+            } catch (error) {
+                console.error("Load Error:", error);
+                document.getElementById('contentGrid').innerHTML = `<p style='text-align:center;color:red'>Failed to load data.</p>`;
             }
         }
-        
-        // ফাংশন: থিম পরিবর্তন করা
-        function setTheme(themeClass) {
-            document.body.className = themeClass;
-            document.querySelectorAll('.theme-button').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`[data-theme="${themeClass}"]`).classList.add('active');
-            localStorage.setItem('theme', themeClass);
-        }
 
-        // ফাংশন: সিস্টেম শুরু করা
-        function initSystem() {
-            // ডেটা লোড করার ডেমো (আপনার Firebase লোড লজিক এখানে থাকবে)
-            // ... আপনার Firebase বা Supabase ডেটা লোড করার কোড ...
-            
-            // নেভিগেশন সেটআপ
-            document.querySelectorAll('.nav-item').forEach(button => {
-                button.addEventListener('click', (e) => navigateTo(e.target.dataset.page));
-            });
-            
-            // থিম সেটআপ
-            document.querySelectorAll('.theme-button').forEach(button => {
-                button.addEventListener('click', (e) => setTheme(e.target.dataset.theme));
-            });
-            const savedTheme = localStorage.getItem('theme') || 'theme-gradient';
-            setTheme(savedTheme);
-            
-            // শুরুতে হোম পেজ রেন্ডার করুন
-            renderGrid(allData, 'contentGrid');
-        }
-        
-        // ********** ✅ SEO পরিবর্তন ৪: প্রতিটি পোস্টের জন্য Microdata সহ renderGrid ফাংশন **********
+        // --- ২. কমেন্ট পোস্ট ফাংশন ---
+        document.getElementById('postComment').addEventListener('click', async () => {
+            const txtInput = document.getElementById('commentInput');
+            const txt = txtInput.value;
+            const btn = document.getElementById('postComment');
+
+            if (currentItem && txt) {
+                // ইউজারকে ফিডব্যাক দেওয়া
+                btn.innerText = "Posting...";
+                btn.disabled = true;
+
+                try {
+                    // Supabase-এ কমেন্ট পাঠানো (POST Request)
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            itemId: currentItem.id,
+                            text: txt
+                        })
+                    });
+
+                    if (!response.ok) throw new Error("Post failed");
+
+                    // সফল হলে লোকালে অ্যাড করে দেখানো (রিলোড ছাড়া)
+                    const cBox = document.getElementById('modalComments');
+                    const noComMsg = cBox.querySelector('p');
+                    if(noComMsg && noComMsg.innerText === "No comments yet.") noComMsg.remove();
+
+                    cBox.innerHTML += `<div style="border-bottom:1px dashed var(--border-color); padding:5px 0; margin-bottom:5px;">
+                        <span style="color:var(--accent-color); font-weight:bold;">You:</span> ${txt}
+                    </div>`;
+                    
+                    // স্ক্রল নিচে নামানো
+                    cBox.scrollTop = cBox.scrollHeight;
+
+                    txtInput.value = "";
+                    alert("Comment Posted Successfully!");
+
+                } catch (error) {
+                    alert("Error posting comment: " + error.message);
+                } finally {
+                    btn.innerText = "Post";
+                    btn.disabled = false;
+                }
+            }
+        });
+
+        // --- ৩. গ্রিড রেন্ডারার ---
         function renderGrid(list, containerId) {
             const container = document.getElementById(containerId);
             container.innerHTML = "";
             list.forEach(item => {
                 const timeStr = timeAgo(item.timestamp);
-                
-                // প্রতিটি কার্ডকে একটি CreativeWork হিসাবে সংজ্ঞায়িত করা
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.onclick = () => openModal(item, timeStr);
-                
-                // Microdata attributes: itemscope, itemtype যোগ করা হলো
-                card.setAttribute('itemscope', '');
-                card.setAttribute('itemtype', 'https://schema.org/CreativeWork'); // বা ImageObject
-                
                 card.innerHTML = `
                     <div class="thumbnail-container">
-                        <img src="${item.imgLink}" 
-                             class="card-img" 
-                             onerror="this.src='https://via.placeholder.com/480x270'" 
-                             alt="${item.title} - AI Art Prompt"
-                             itemprop="image" >
+                        <img src="${item.imgLink}" class="card-img" onerror="this.src='https://via.placeholder.com/480x270'">
                     </div>
                     <div class="card-meta">
-                        <img src="${adminAvatar}" class="channel-icon" alt="AIHub Creator Icon">
+                        <img src="${adminAvatar}" class="channel-icon">
                         <div class="text-info">
-                            <h3 class="card-title" itemprop="name">${item.title}</h3> 
-                            
-                            <div class="card-subtitle">
-                                <span itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
-                                    Rating: <span itemprop="ratingValue">${item.rating}</span>
-                                </span>
-                                • 
-                                <span itemprop="datePublished">${timeStr}</span>
-                            </div>
-                            
-                            <p class="sr-only" itemprop="description">
-                                এই এআই আর্টটি "${item.title}" প্রম্পট থেকে তৈরি হয়েছে। এটি ${item.rating} রেটিং পেয়েছে। 
-                            </p>
+                            <div class="card-title">${item.title}</div>
+                            <div class="card-subtitle">Rating: ${item.rating} • ${timeStr}</div>
                         </div>
                     </div>
                 `;
                 container.appendChild(card);
             });
         };
-        // ********** renderGrid ফাংশনের শেষ **********
+
+        // --- ৪. ইউটিলিটি ---
+        function timeAgo(ts) {
+            if(!ts) return "Recently";
+            const sec = Math.floor((Date.now()-ts)/1000);
+            if(sec>86400) return Math.floor(sec/86400) + " days ago";
+            if(sec>3600) return Math.floor(sec/3600) + " hours ago";
+            if(sec>60) return Math.floor(sec/60) + " mins ago";
+            return "Just now";
+        }
+
+        // --- ৫. ডিটেইল পেজ (পরিবর্তিত) ---
+        function openModal(item, time) {
+            currentItem = item;
+            document.getElementById('modalImg').src = item.imgLink;
+            document.getElementById('modalTitle').innerText = item.title;
+            document.getElementById('modalPrompt').innerText = item.prompt;
+            document.getElementById('modalMeta').innerText = `Posted: ${time} • Rating: ${item.rating}`;
+            document.getElementById('detailPageTitle').innerText = item.title; // পেজের টাইটেল সেট করা
+            
+            // ডিটেইল পেজটি দেখাও
+            showPage('detailPage');
+
+            const cBox = document.getElementById('modalComments');
+            cBox.innerHTML = "";
+            if(item.comments) {
+                Object.values(item.comments).forEach(c => {
+                    cBox.innerHTML += `<div style="border-bottom:1px dashed var(--border-color); padding:5px 0; margin-bottom:5px;">
+                        <span style="color:var(--accent-color); font-weight:bold;">Visitor:</span> ${c.text}
+                    </div>`;
+                });
+            } else cBox.innerHTML = "<p>No comments yet.</p>";
+
+            saveHistory(item);
+        }
+
+        // closeModal() ফাংশনটি এখন আর দরকার নেই। ব্যাক বাটন সরাসরি showPage('homePage') কল করছে।
+        // window.onpopstate ও checkDeepLink() সরানো হলো।
 
 
-        // সার্চ বক্স লজিক
+        // --- ৬. অ্যাকশন বাটন ---
+        function copyPrompt() {
+            navigator.clipboard.writeText(document.getElementById('modalPrompt').innerText);
+            alert("Copied!");
+        }
+        async function shareItem() {
+            if(!currentItem) return;
+            // এইখানে URL-এ view=slug না থাকায় সরাসরি মূল URL ব্যবহার করা হচ্ছে 
+            const shareUrl = window.location.origin + window.location.pathname; 
+            const data = { title: currentItem.title, text: `Check this AI Art!\n${currentItem.title}\n${shareUrl}`, url: shareUrl };
+            try { await navigator.share(data); } catch { navigator.clipboard.writeText(shareUrl); alert("Link copied!"); }
+        }
+
+        // --- ৭. সেটিংস ও অন্যান্য ---
+        function saveHistory(item) {
+            let hist = JSON.parse(localStorage.getItem('hist')) || [];
+            hist = hist.filter(h => h.id !== item.id);
+            hist.unshift(item);
+            localStorage.setItem('hist', JSON.stringify(hist));
+        }
+        
+        function openThemeSelector() { document.getElementById('themeModal').classList.add('active'); }
+        function closeThemeSelector() { document.getElementById('themeModal').classList.remove('active'); }
+        function setTheme(t) { document.body.className = t; localStorage.setItem('theme', t); closeThemeSelector(); }
+        document.body.className = localStorage.getItem('theme') || 'theme-gradient';
+
+        function openHistoryPage() { showPage('historyPage'); renderGrid(JSON.parse(localStorage.getItem('hist'))||[], 'historyGrid'); }
+        function shareApp() { navigator.clipboard.writeText(window.location.href); alert("App Link Copied!"); }
+
+        function switchTab(id, el) {
+            document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+            el.classList.add('active');
+        }
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            // পেজ পরিবর্তন হলে সার্চ ইনপুট লুকানো
+            document.getElementById('suggestionsBox').style.display='none';
+            document.getElementById('searchInput').value = "";
+        }
+
         const sInput = document.getElementById('searchInput');
         const sBox = document.getElementById('suggestionsBox');
         sInput.addEventListener('input', function() {
@@ -347,15 +517,17 @@
         // Start
         initSystem();
     
-    </script>
-    <script
-        type="text/javascript"
-        src="https://pl28257759.effectivegatecpm.com/5f/a6/71/5fa67127a5330fefcad069c81fcdbef2.js"
-    ></script>
+                           </script>
+  <script
+  type="text/javascript"
+  src="https://pl28257759.effectivegatecpm.com/5f/a6/71/5fa67127a5330fefcad069c81fcdbef2.js"
+></script>
 
-    <script
-        type="text/javascript"
-        src="https://pl28257759.effectivegatecpm.com/6c/a2/2a/6ca22af7f87964724b07f893d5edc423.js"
-    ></script>
+<script
+  type="text/javascript"
+  src="https://pl28257775.effectivegatecpm.com/11/33/a4/1133a49f927c7c98400b16a8882fa086.js"
+></script>
+     
+
 </body>
 </html>
