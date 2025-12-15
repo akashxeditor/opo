@@ -4,22 +4,102 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Prompt Hub - Home</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* বেসিক স্টাইল */
-        body { font-family: sans-serif; background-color: #121212; color: white; margin: 0; }
-        header { background-color: #1f1f1f; padding: 15px; text-align: center; border-bottom: 2px solid #7597de; }
-        .post-link { 
-            display: block; 
-            padding: 15px; 
-            border-bottom: 1px solid #333; 
-            text-decoration: none; 
-            color: white;
-            transition: background-color 0.2s;
+        /* CSS ভেরিয়েবলস, থিমস এবং অন্যান্য স্টাইল এখানে অপরিবর্তিত রাখা হয়েছে */
+        :root {
+            --bg-primary: linear-gradient(180deg, #2b1055 0%, #7597de 100%);
+            --bg-secondary: rgba(255, 255, 255, 0.1); 
+            --text-primary: #ffffff;
+            --text-secondary: #e0e0e0;
+            --nav-bg: rgba(20, 20, 40, 0.9);
+            --border-color: rgba(255, 255, 255, 0.2);
+            --glass-effect: blur(10px);
+            --accent-color: #ff0000;
         }
-        .post-link:hover { background-color: #222; }
-        .list-container { max-width: 700px; margin: 20px auto; padding: 0 10px; }
 
-        /* iframe কন্টেইনার স্টাইল (যা পোস্টের বিস্তারিত দেখাবে) */
+        body.theme-light { --bg-primary: #f5f5f5; --bg-secondary: #ffffff; --text-primary: #0f0f0f; --text-secondary: #606060; --nav-bg: #ffffff; --border-color: #e0e0e0; --glass-effect: none; }
+        body.theme-dark { --bg-primary: #121212; --bg-secondary: #1e1e1e; --text-primary: #ffffff; --text-secondary: #aaaaaa; --nav-bg: #1e1e1e; --border-color: #333; }
+        body.theme-neon { --bg-primary: #050510; --bg-secondary: #0f0f20; --text-primary: #00f2ff; --text-secondary: #b000ff; --nav-bg: #0f0f20; --border-color: #00f2ff; --accent-color: #00f2ff; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; padding-bottom: 70px; background-attachment: fixed; }
+
+        header {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--nav-bg); backdrop-filter: var(--glass-effect);
+            padding: 10px 15px; display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .logo { font-size: 20px; font-weight: bold; color: var(--text-primary); display: flex; align-items: center; gap: 5px; }
+        
+        .search-container { position: relative; width: 70%; }
+        .search-box {
+            display: flex; align-items: center;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 25px; padding: 8px 15px;
+        }
+        .search-box input {
+            background: transparent; border: none; outline: none; color: var(--text-primary); width: 100%; margin-left: 8px; font-size: 15px;
+        }
+        .suggestions-box {
+            position: absolute; top: 110%; left: 0; width: 100%;
+            background: var(--nav-bg); border-radius: 10px; z-index: 101;
+            display: none; border: 1px solid var(--border-color);
+        }
+        .suggestion-item { padding: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; font-size: 14px; }
+
+        /* --- Card Style --- */
+        .grid-container {
+            padding: 0; max-width: 600px; margin: 0 auto;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .card {
+            background: transparent; cursor: pointer; padding-bottom: 15px; margin-bottom: 5px;
+        }
+        .thumbnail-container {
+            width: 100%; position: relative; padding-top: 56.25%; /* 16:9 */
+            background: #000; overflow: hidden;
+        }
+        .card-img {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;
+        }
+        .card-meta {
+            display: flex; padding: 12px 12px 0 12px; align-items: flex-start;
+        }
+        .channel-icon {
+            width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+            margin-right: 12px; flex-shrink: 0; background: #333; border: 1px solid var(--border-color);
+        }
+        .text-info { flex: 1; display: flex; flex-direction: column; }
+        .card-title {
+            font-size: 16px; font-weight: 500; line-height: 1.3; margin-bottom: 4px;
+            color: var(--text-primary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .card-subtitle { font-size: 12px; color: var(--text-secondary); }
+
+        /* Settings, Contact, Theme Modal - অন্যান্য পেইজ স্টাইল */
+        .settings-list { padding: 15px; max-width: 600px; margin: 0 auto; }
+        .setting-card {
+            background: var(--bg-secondary); border: 1px solid var(--border-color);
+            padding: 15px; margin-bottom: 10px; border-radius: 12px;
+            display: flex; align-items: center; cursor: pointer; backdrop-filter: var(--glass-effect);
+        }
+        .contact-btn {
+            background: var(--bg-secondary); color: var(--text-primary); padding: 12px;
+            border-radius: 10px; display: flex; align-items: center; margin-bottom: 10px;
+            text-decoration: none; border: 1px solid var(--border-color);
+        }
+        .theme-modal {
+            position: fixed; bottom: -100%; left: 0; width: 100%;
+            background: var(--nav-bg); border-radius: 20px 20px 0 0; padding: 20px;
+            z-index: 2000; transition: bottom 0.3s; border-top: 1px solid var(--border-color);
+        }
+        .theme-modal.active { bottom: 0; }
+        .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+
+        /* --- Iframe Modal (পোস্ট ভিউ) --- */
         #postDetailsIframeContainer {
             position: fixed;
             top: 0;
@@ -27,9 +107,9 @@
             width: 100%;
             height: 100%;
             background: #121212; /* ডার্ক ব্যাকগ্রাউন্ড */
-            z-index: 9999; /* সবার উপরে রাখার জন্য */
-            overflow: auto; /* স্ক্রল করার জন্য */
-            display: none; /* ডিফল্টভাবে লুকানো থাকবে */
+            z-index: 9999; 
+            overflow: hidden; 
+            display: none; 
         }
 
         #postIframe {
@@ -55,100 +135,273 @@
             line-height: 40px;
             text-align: center;
         }
+
+        /* Bottom Nav & Pages */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: var(--nav-bg); border-top: 1px solid var(--border-color);
+            display: flex; justify-content: space-around; padding: 10px 0;
+            z-index: 999; backdrop-filter: var(--glass-effect);
+        }
+        .nav-item { text-align: center; color: var(--text-secondary); width: 25%; font-size: 10px; cursor: pointer; }
+        .nav-item.active { color: var(--accent-color); }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; display: block; }
+        .page { display: none; padding-top: 10px; }
+        .page.active { display: block; }
     </style>
 </head>
-<body>
+
+<body class="theme-gradient">
+
     <header>
-        <h1>AI Prompt Hub</h1>
-        <p>AI Avatar: <img id="adminAvatarImg" src="https://via.placeholder.com/36" width="36" height="36" style="border-radius: 50%; vertical-align: middle;"></p>
+        <div class="logo"><i class="fab fa-youtube"></i> AiHub</div>
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fas fa-search" style="color:var(--text-secondary)"></i>
+                <input type="text" id="searchInput" placeholder="Search...">
+            </div>
+            <div class="suggestions-box" id="suggestionsBox"></div>
+        </div>
     </header>
-    
-    <main id="appContent">
-        <div id="listContainer" class="list-container">
-            <h2>Latest Prompts</h2>
+
+    <div id="homePage" class="page active">
+        <div class="grid-container" id="contentGrid">
+            <p style="text-align:center; padding:20px;">Loading...</p>
+        </div>
+    </div>
+
+    <div id="trendingPage" class="page">
+        <h3 style="padding: 10px 15px; color: var(--accent-color);">🔥 Trending (4.5+)</h3>
+        <div class="grid-container" id="trendingGrid"></div>
+    </div>
+
+    <div id="contactPage" class="page" style="padding: 20px; max-width: 600px; margin: 0 auto;">
+        <h2>Connect</h2>
+        <a href="mailto:minhaj7b118b11@gmail.com" class="contact-btn"><i class="fas fa-envelope" style="color: #DB4437;"></i> Email</a>
+        <a href="https://t.me/minhajcode" target="_blank" class="contact-btn"><i class="fab fa-telegram" style="color: #0088CC;"></i> Telegram</a>
+        <a href="#" class="contact-btn"><i class="fab fa-youtube" style="color: #FF0000;"></i> YouTube</a>
+        <a href="#" class="contact-btn"><i class="fab fa-facebook" style="color: #1877F2;"></i> Facebook</a>
+    </div>
+
+    <div id="settingPage" class="page">
+        <div class="settings-list">
+            <h2 style="margin: 0 0 20px 0; text-align: center;">Settings</h2>
+            
+            <div class="setting-card" onclick="openThemeSelector()">
+                <i class="fas fa-palette setting-icon"></i>
+                <span class="setting-text">Themes</span>
+                <i class="fas fa-chevron-right" style="opacity:0.5; font-size:12px;"></i>
+            </div>
+            
+            <div class="setting-card" onclick="openHistoryPage()">
+                <i class="fas fa-history setting-icon"></i>
+                <span class="setting-text">Watch History</span>
+                <i class="fas fa-chevron-right" style="opacity:0.5; font-size:12px;"></i>
             </div>
 
-        <div id="postDetailsIframeContainer">
-            <button id="closeIframeBtn" onclick="closePost()">X</button>
-            <iframe id="postIframe" title="Post Details"></iframe>
+            <div class="setting-card" onclick="shareApp()">
+                <i class="fas fa-share-alt setting-icon"></i>
+                <span class="setting-text">Share Application</span>
+            </div>
+
+            <a href="https://your-privacy-link.com" target="_blank" style="text-decoration:none; color:inherit;">
+                <div class="setting-card">
+                    <i class="fas fa-shield-alt setting-icon"></i>
+                    <span class="setting-text">Privacy Policy</span>
+                    <i class="fas fa-external-link-alt" style="opacity:0.5; font-size:12px;"></i>
+                </div>
+            </a>
+
+            <a href="https://your-help-link.com" target="_blank" style="text-decoration:none; color:inherit;">
+                <div class="setting-card">
+                    <i class="fas fa-question-circle setting-icon"></i>
+                    <span class="setting-text">Help & Support</span>
+                    <i class="fas fa-external-link-alt" style="opacity:0.5; font-size:12px;"></i>
+                </div>
+            </a>
+            
+             <div class="setting-card" onclick="window.location.href='admin.html'">
+                <i class="fas fa-user-shield setting-icon"></i>
+                <span class="setting-text">Admin Panel</span>
+            </div>
         </div>
-    </main>
+    </div>
+
+    <div id="historyPage" class="page">
+        <div style="padding:15px; display:flex; align-items:center;">
+            <i class="fas fa-arrow-left" onclick="showPage('settingPage')" style="font-size:20px; margin-right:15px; cursor:pointer;"></i>
+            <h3>Watch History</h3>
+        </div>
+        <div class="grid-container" id="historyGrid"></div>
+    </div>
+
+    <div id="postDetailsIframeContainer">
+        <button id="closeIframeBtn" onclick="closePost()">X</button>
+        <iframe id="postIframe" title="Post Details"></iframe>
+    </div>
+    <div class="theme-modal" id="themeModal">
+        <div style="display:flex; justify-content:space-between;">
+            <h3>Select Theme</h3>
+            <span onclick="closeThemeSelector()" style="cursor:pointer; font-size:20px;">&times;</span>
+        </div>
+        <div class="theme-grid">
+            <div class="theme-option" onclick="setTheme('theme-gradient')"><div class="theme-preview" style="background:linear-gradient(135deg, #2b1055, #7597de);"></div>Luxe</div>
+            <div class="theme-option" onclick="setTheme('theme-neon')"><div class="theme-preview" style="background:#000; border:1px solid cyan;"></div>Neon</div>
+            <div class="theme-option" onclick="setTheme('theme-dark')"><div class="theme-preview" style="background:#121212;"></div>Dark</div>
+            <div class="theme-option" onclick="setTheme('theme-light')"><div class="theme-preview" style="background:#f5f5f5;"></div>Light</div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('homePage', this)"><i class="fas fa-home"></i> Home</div>
+        <div class="nav-item" onclick="switchTab('trendingPage', this)"><i class="fas fa-fire"></i> Trending</div>
+        <div class="nav-item" onclick="switchTab('contactPage', this)"><i class="fas fa-envelope"></i> Contact</div>
+        <div class="nav-item" onclick="switchTab('settingPage', this)"><i class="fas fa-cog"></i> Settings</div>
+    </nav>
 
     <script>
-        const appContent = document.getElementById('listContainer');
-        
-        // *** আপনার সঠিক API Endpoint ***
-        const API_ENDPOINT = 'https://ambylxvsxgxfgzpxzwpr.supabase.co/functions/v1/bright-worker';
+        // --- গ্লোবাল ভেরিয়েবল ---
+        let adminAvatar = "https://via.placeholder.com/36";
+        let allData = [];
+        const API_URL = "https://ambylxvsxgxfgzpxzwpr.supabase.co/functions/v1/bright-worker";
 
-        // --- পোস্টের বিস্তারিত দেখার লজিক (iframe নিয়ন্ত্রণ) ---
+        // --- Iframe কন্ট্রোল ফাংশন ---
         function openPost(slug) {
-            // ১. পোস্টের তালিকা লুকানো
-            document.getElementById('listContainer').style.display = 'none';
-            // ২. iframe কন্টেইনার দেখানো
+            // ১. iframe কন্টেইনার দেখানো
             document.getElementById('postDetailsIframeContainer').style.display = 'block';
-            // ৩. iframe এ post.html লোড করা, সাথে স্লাগ প্যারামিটার
+            // ২. iframe এ post.html লোড করা, সাথে স্লাগ প্যারামিটার
             document.getElementById('postIframe').src = `post.html?view=${slug}`;
-            // ৪. বাটন দেখানো
             document.getElementById('closeIframeBtn').style.display = 'block';
         }
 
-        // --- পোস্ট ভিউ বন্ধ করার লজিক ---
         function closePost() {
             // ১. iframe কন্টেইনার লুকানো
             document.getElementById('postDetailsIframeContainer').style.display = 'none';
-            // ২. পোস্টের তালিকা দেখানো
-            document.getElementById('listContainer').style.display = 'block';
-            // ৩. iframe src মুছে ফেলা
+            // ২. iframe src মুছে ফেলা
             document.getElementById('postIframe').src = ''; 
             document.getElementById('closeIframeBtn').style.display = 'none';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         
-        // --- ডেটা লোড করে হোমপেজ রেন্ডার করা ---
-        async function fetchData() {
+        // --- ১. সিস্টেম শুরু (ডাটা লোড) ---
+        async function initSystem() {
             try {
-                const response = await fetch(API_ENDPOINT);
-                if (!response.ok) throw new Error('Failed to fetch data.');
-                const data = await response.json();
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error("Server Error");
+                const result = await response.json();
                 
-                if (data.avatar) {
-                    document.getElementById('adminAvatarImg').src = data.avatar;
+                if(result.avatar) {
+                    adminAvatar = result.avatar;
+                    document.getElementById('adminAvatarImg').src = adminAvatar; 
                 }
-                
-                renderHomePage(data.prompts);
+
+                const data = result.prompts;
+                allData = [];
+                if (data) {
+                    Object.keys(data).forEach(key => allData.push({ id: key, ...data[key] }));
+                    allData.reverse();
+                    
+                    renderGrid(allData, 'contentGrid');
+                    renderGrid(allData.filter(d => parseFloat(d.rating) >= 4.5), 'trendingGrid');
+                } else {
+                    document.getElementById('contentGrid').innerHTML = "<p style='text-align:center'>No Data Found</p>";
+                }
 
             } catch (error) {
-                appContent.innerHTML = `<h1>Error Loading Application: ${error.message}</h1>`;
-                console.error("Initialization Error:", error);
+                console.error("Load Error:", error);
+                document.getElementById('contentGrid').innerHTML = `<p style='text-align:center;color:red'>Failed to load data.</p>`;
             }
         }
 
-        function renderHomePage(prompts) {
-            document.title = "AI Prompt Hub";
-            appContent.innerHTML = '<h2>Latest Prompts</h2>';
-            
-            if (prompts) {
-                Object.entries(prompts).reverse().forEach(([key, item]) => {
-                    const postSlug = item.title.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/[\s]+/g, '-');
-                    
-                    appContent.innerHTML += `
-                        <a href="javascript:void(0)" onclick="openPost('${postSlug}')" class="post-link">
-                            ${item.title} <span style="float:right;">(${item.rating} ★)</span>
-                        </a>
-                    `;
-                });
-            } else {
-                appContent.innerHTML = "<p style='text-align:center;'>No prompts found.</p>";
-            }
-        }
+        // --- ২. গ্রিড রেন্ডারার ---
+        function renderGrid(list, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = "";
+            list.forEach(item => {
+                const timeStr = timeAgo(item.timestamp);
+                const postSlug = item.title.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/[\s]+/g, '-');
+                
+                const card = document.createElement('div');
+                card.className = 'card';
+                // openPost ফাংশন ব্যবহার করা হলো
+                card.onclick = () => openPost(postSlug); 
+                card.innerHTML = `
+                    <div class="thumbnail-container">
+                        <img src="${item.imgLink}" class="card-img" onerror="this.src='https://via.placeholder.com/480x270'">
+                    </div>
+                    <div class="card-meta">
+                        <img src="${adminAvatar}" class="channel-icon">
+                        <div class="text-info">
+                            <div class="card-title">${item.title}</div>
+                            <div class="card-subtitle">Rating: ${item.rating} • ${timeStr}</div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        };
 
-        // --- রাউটিং শুরু ---
-        // যেহেতু আপনি এখন iframe ব্যবহার করছেন, URL এ ?view থাকলেও সরাসরি তালিকা দেখাবে।
-        // তবে যদি আপনি চান যে শেয়ার করা লিংক সরাসরি পোস্টে খুলুক, তাহলে
-        // URL চেক করার লজিক দরকার। কিন্তু iframe লজিক সহজে URL পরিবর্তন করে না।
-        // আমরা এখন শুধুমাত্র তালিকা লোড করব।
+        // --- ৩. ইউটিলিটি ---
+        function timeAgo(ts) {
+            if(!ts) return "Recently";
+            const sec = Math.floor((Date.now()-ts)/1000);
+            if(sec>86400) return Math.floor(sec/86400) + " days ago";
+            if(sec>3600) return Math.floor(sec/3600) + " hours ago";
+            if(sec>60) return Math.floor(sec/60) + " mins ago";
+            return "Just now";
+        }
         
-        fetchData();
+        // --- ৪. সেটিংস ও অন্যান্য (পূর্বের লজিক) ---
+        function openThemeSelector() { document.getElementById('themeModal').classList.add('active'); }
+        function closeThemeSelector() { document.getElementById('themeModal').classList.remove('active'); }
+        function setTheme(t) { document.body.className = t; localStorage.setItem('theme', t); closeThemeSelector(); }
+        document.body.className = localStorage.getItem('theme') || 'theme-gradient';
+
+        function openHistoryPage() { showPage('settingPage'); /* History Grid Rendering Logic here */ }
+        function shareApp() { navigator.clipboard.writeText(window.location.href); alert("App Link Copied!"); }
+
+        function switchTab(id, el) {
+            document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+            el.classList.add('active');
+        }
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        // সার্চ লজিক
+        const sInput = document.getElementById('searchInput');
+        const sBox = document.getElementById('suggestionsBox');
+        sInput.addEventListener('input', function() {
+            const val = this.value.toLowerCase();
+            sBox.innerHTML = "";
+            if(!val) { sBox.style.display='none'; renderGrid(allData, 'contentGrid'); return; }
+            const filtered = allData.filter(d => d.title.toLowerCase().includes(val));
+            if(filtered.length > 0) {
+                sBox.style.display='block';
+                filtered.slice(0,5).forEach(item => {
+                    const d = document.createElement('div');
+                    d.className='suggestion-item'; d.innerText=item.title;
+                    d.onclick = () => { 
+                        sInput.value=item.title; 
+                        renderGrid([item], 'contentGrid'); 
+                        sBox.style.display='none'; 
+                    };
+                    sBox.appendChild(d);
+                });
+            } else sBox.style.display='none';
+            if(document.getElementById('homePage').classList.contains('active')) renderGrid(filtered, 'contentGrid');
+        });
+        document.onclick=(e)=>{ if(!e.target.closest('.search-container')) sBox.style.display='none'; }
+
+
+        // Start System
+        initSystem();
+    
     </script>
+     
+
 </body>
 </html>
