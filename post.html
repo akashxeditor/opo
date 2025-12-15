@@ -5,43 +5,255 @@
   <title>Loading...</title>
   <meta name="description" content="Loading AI Prompt">
   <meta name="robots" content="index, follow">
+  <style>
+    body { 
+        background-color: #121212; 
+        color: #ffffff; 
+        font-family: sans-serif;
+        padding: 0;
+        margin: 0;
+    }
+    article {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 55px 10px 10px 10px; /* উপরে X বাটনের জন্য স্পেস রাখা হয়েছে */
+    }
+    #postImg {
+        width: 100%;
+        max-width: 600px;
+        height: auto;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+    #postDetails {
+        padding: 0 5px;
+        margin-bottom: 20px;
+    }
+    #postDetails h1 {
+        font-size: 24px;
+        margin-bottom: 5px;
+    }
+    #postInfo {
+        font-size: 14px;
+        color: #aaaaaa;
+        margin-bottom: 15px;
+    }
+    #promptArea {
+        padding: 0 5px;
+    }
+    #promptArea h3 {
+        font-size: 18px;
+        margin-bottom: 10px;
+        color: #7597de;
+    }
+    #postPrompt {
+        background-color: #222222;
+        padding: 15px;
+        border-radius: 8px;
+        white-space: pre-wrap;
+        font-family: monospace;
+        font-size: 14px;
+        overflow-x: auto;
+    }
+    .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        padding: 0 5px;
+    }
+    .button-group button {
+        flex-grow: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    #copyBtn { background-color: #ff4757; color: white; }
+    #shareBtn { background-color: #075E54; color: white; }
+    #commentsSection .comment-input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #444;
+        background: #333;
+        color: white;
+    }
+    #commentsSection .comment-btn {
+        background-color: #7597de;
+        color: white;
+        width: auto;
+        margin-top: 10px;
+    }
+  </style>
 </head>
 
 <body>
 
 <article>
-  <h1 id="postTitle">Loading...</h1>
-  <img id="postImg" style="width:100%;max-width:600px;border-radius:10px">
-  <p id="postPrompt"></p>
+    <img id="postImg" src="https://via.placeholder.com/600x400" alt="Post Image">
+    
+    <div id="postDetails">
+        <h1 id="postTitle">Loading...</h1>
+        <p id="postInfo">Posted: <span id="postTimestamp">...</span> • Rating: <span id="postRating">...</span></p>
+    </div>
+
+    <div class="button-group">
+        <button id="copyBtn" onclick="copyPrompt()">Copy Prompt</button>
+        <button id="shareBtn" onclick="sharePost()">Share</button>
+    </div>
+
+    <div id="promptArea">
+        <h3>Prompt:</h3>
+        <pre id="postPrompt">Loading prompt...</pre>
+    </div>
+    
+    <div id="commentsSection" style="padding: 0 5px; margin-top: 30px;">
+        <h3>Comments</h3>
+        <p id="commentStatus"></p>
+        <div id="commentList">No comments yet.</div>
+        
+        <input type="text" id="commentInput" class="comment-input" placeholder="Add comment...">
+        <button class="comment-btn" onclick="addComment()">Post</button>
+    </div>
+    
 </article>
 
 <script>
+// Iframe-এর URL থেকে স্লাগ নেওয়া হচ্ছে
 const slug = new URLSearchParams(location.search).get("view");
+// *** আপনার সঠিক API Endpoint ***
 const API_URL = "https://ambylxvsxgxfgzpxzwpr.supabase.co/functions/v1/bright-worker";
 
-fetch(API_URL)
-.then(r=>r.json())
-.then(res=>{
-  const items = Object.values(res.prompts || {});
-  const post = items.find(p =>
-    p.title.trim().replace(/\s+/g,'-') === slug
-  );
+let currentPostId = null; // কমেন্ট অ্যাড করার জন্য প্রয়োজন
 
-  if(!post){
-    document.body.innerHTML = "<h2>Post not found</h2>";
-    return;
-  }
+// ত্রুটিমুক্ত স্লাগ জেনারেশন ফাংশন
+function generateSlug(title) {
+    return title.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/[\s]+/g, '-');
+}
 
-  // Content
-  document.getElementById("postTitle").innerText = post.title;
-  document.getElementById("postImg").src = post.imgLink;
-  document.getElementById("postPrompt").innerText = post.prompt;
+async function loadPostDetails() {
+    try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error("API fetch failed.");
+        const res = await response.json();
+        
+        const items = Object.entries(res.prompts || {});
+        
+        // ত্রুটিমুক্ত স্লাগ ম্যাচিং
+        const targetEntry = items.find(([id, p]) =>
+            generateSlug(p.title) === decodeURIComponent(slug).toLowerCase()
+        );
+        
+        if (!targetEntry) {
+            document.body.innerHTML = "<h2 style='text-align:center; padding-top: 50px;'>Post not found.</h2>";
+            return;
+        }
 
-  // SEO
-  document.title = post.title + " | Jhadi AI";
-  document.querySelector("meta[name='description']")
-    .setAttribute("content", post.prompt.substring(0,150));
-});
+        const [postId, post] = targetEntry;
+        currentPostId = postId;
+
+        // --- কন্টেন্ট লোড করা ---
+        document.getElementById("postTitle").innerText = post.title;
+        document.getElementById("postImg").src = post.imgLink;
+        document.getElementById("postPrompt").innerText = post.prompt;
+        document.getElementById("postRating").innerText = post.rating || "5.0";
+        document.getElementById("postTimestamp").innerText = "Recently Posted"; 
+
+        // --- ডাইনামিক SEO (iframe এর টাইটেল) ---
+        document.title = post.title + " | Jhadi AI";
+        
+        const metaDescription = post.description || post.prompt;
+        document.querySelector("meta[name='description']")
+            .setAttribute("content", metaDescription.substring(0, 150) + '...');
+        
+        // কমেন্ট লোড
+        renderComments(post.comments);
+        
+    } catch(error) {
+        document.body.innerHTML = `<h2 style='text-align:center; padding-top: 50px;'>Error: ${error.message}</h2>`;
+        console.error("Fetch error:", error);
+    }
+}
+
+// --- কমেন্ট রেন্ডার করার ফাংশন ---
+function renderComments(comments) {
+    const commentList = document.getElementById('commentList');
+    commentList.innerHTML = '';
+    
+    if (comments) {
+        // নতুন কমেন্ট উপরে দেখানোর জন্য রিভার্স করা
+        const sortedComments = Object.entries(comments).reverse(); 
+        
+        sortedComments.forEach(([id, comment]) => {
+            const commentDiv = document.createElement('div');
+            commentDiv.style.marginBottom = '10px';
+            commentDiv.innerHTML = `<p style="margin: 0; padding: 5px; background: #252525; border-radius: 4px;">${comment.text}</p>`;
+            commentList.appendChild(commentDiv);
+        });
+    } else {
+        commentList.innerText = "No comments yet.";
+    }
+}
+
+// --- কমেন্ট অ্যাড করার ফাংশন ---
+async function addComment() {
+    const text = document.getElementById('commentInput').value.trim();
+    const status = document.getElementById('commentStatus');
+    
+    if (!text || !currentPostId) {
+        status.innerText = "Comment cannot be empty.";
+        status.style.color = 'red';
+        return;
+    }
+    
+    status.innerText = "Posting comment...";
+    status.style.color = 'yellow';
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ itemId: currentPostId, text: text })
+        });
+
+        if (!response.ok) throw new Error("Failed to post comment.");
+
+        document.getElementById('commentInput').value = '';
+        status.innerText = "Comment Added Successfully! Refreshing page to see it.";
+        status.style.color = 'lightgreen';
+        
+        // কমেন্ট পোস্ট হওয়ার পর পেজ রিফ্রেশ করা
+        setTimeout(() => loadPostDetails(), 1000); 
+
+    } catch (error) {
+        status.innerText = `Error posting comment: ${error.message}`;
+        status.style.color = 'red';
+    }
+}
+
+// --- কাস্টম ফাংশন ---
+function copyPrompt() {
+    const promptText = document.getElementById("postPrompt").innerText;
+    navigator.clipboard.writeText(promptText);
+    alert('Prompt copied!');
+}
+
+function sharePost() {
+    const shareUrl = window.location.href; // iframe এর URL
+    if (navigator.share) {
+        navigator.share({
+            title: document.title,
+            text: document.getElementById("postPrompt").innerText.substring(0, 50) + "...",
+            url: shareUrl,
+        });
+    } else {
+        alert('Share feature is not supported in this browser. Please copy the URL manually.');
+    }
+}
+
+// লোড করা শুরু
+loadPostDetails();
 </script>
 
 </body>
